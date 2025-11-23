@@ -7,6 +7,9 @@
   "scripts": {
     "start": "nodemon index.js"
   },
+  "bin": {
+    "tmdb": "index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ZaidBinRashid/TMDB-CLI-Tool.git"
