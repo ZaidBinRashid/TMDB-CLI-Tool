@@ -1,14 +1,14 @@
 {
   "name": "tmdb-cli-tool",
   "version": "1.0.0",
-  "description": "",
+  "description": "A CLI tool for fetching movie data from TMDB",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "nodemon index.js"
   },
   "bin": {
-    "tmdb": "index.js"
+    "tmdb-app": "./index.js"
   },
   "repository": {
     "type": "git",
@@ -23,8 +23,6 @@
   "homepage": "https://github.com/ZaidBinRashid/TMDB-CLI-Tool#readme",
   "dependencies": {
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "nodemon": "^3.1.11",
     "yargs": "^18.0.0"
   },
   "devDependencies": {

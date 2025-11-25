@@ -1,27 +1,65 @@
 #!/usr/bin/env node
-// Above line is called Shebang Line which tells the OS which interpreter to use.
+// ^ The shebang makes this file executable as a CLI command on all OS environments.
 
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 import yargs from "yargs";
-const argv = yargs(process.argv.slice(2)).argv;
+import { hideBin } from "yargs/helpers";
 
+// Load environment variables from .env file
 dotenv.config();
 
-const TMBD = async (type) => {
+// Map user-friendly CLI options to TMDB API endpoints
+const TYPE_MAP = {
+  playing: "now_playing",
+  popular: "popular",
+  top: "top_rated",
+  upcoming: "upcoming"
+};
 
-  const url = `https://api.themoviedb.org/3/movie/${type}?language=en-US&page=1`;
-  const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${process.env.TOKEN}`
-    }
-  };
-  
-  fetch(url, options)
-    .then(res => res.json())
-    .then(json => console.log(json))
-    .catch(err => console.error(err));
-}
+// Configure CLI argument parsing using yargs
+const argv = yargs(hideBin(process.argv))
+  .option("type", {
+    alias: "t",
+    type: "string",
+    describe: "Choose: playing, popular, top, upcoming",
+    demandOption: true, // Requires the user to pass --type
+  })
+  .help()
+  .argv;
 
-TMBD(argv.type);
+// Main function to fetch data from TMDB API
+const TMDB = async (typeKey) => {
+  const endpoint = TYPE_MAP[typeKey];
+
+  // Validate user-provided type
+  if (!endpoint) {
+    console.error(`❌ Invalid type "${typeKey}". Use: playing, popular, top, upcoming`);
+    process.exit(1);
+  }
+
+  try {
+    // Construct the TMDB API URL
+    const url = `https://api.themoviedb.org/3/movie/${endpoint}?language=en-US&page=1`;
+
+    // Make the fetch request
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TOKEN}`, // Bearer token from .env
+      },
+    });
+
+    // Parse API response as JSON
+    const data = await response.json();
+
+    // Output formatted JSON to the terminal
+    console.log(JSON.stringify(data, null, 2));
+
+  } catch (error) {
+    console.error("❌ Error fetching data:", error);
+  }
+};
+
+// Execute with user-provided CLI argument
+TMDB(argv.type);
